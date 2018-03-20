@@ -11,7 +11,7 @@ last_id = ""
 
 def getFollowerCount(user):
     try:
-        r = requests.get("https://www.instagram.com/" + user + "/")
+        r = tryGet("https://www.instagram.com/" + user + "/")
     except requests.exceptions.ChunkedEncodingError:
         time.sleep(1)
         r = requests.get("https://www.instagram.com/" + user + "/")
@@ -25,7 +25,7 @@ def getFollowerCount(user):
 
 def getRecentMediaCodesAndIDs(user, lastMedia=''):
     try:
-        r = requests.get("https://www.instagram.com/" + user + "/")
+        r = tryGet("https://www.instagram.com/" + user + "/")
     except requests.exceptions.ChunkedEncodingError:
         time.sleep(1)
         r = requests.get("https://www.instagram.com/" + user + "/")
@@ -46,7 +46,7 @@ def getRecentMediaCodesAndIDs(user, lastMedia=''):
 
 def getMediaInfo(code):
     try:
-        r = requests.get("https://www.instagram.com/p/" + code + "/")
+        r = tryGet("https://www.instagram.com/p/" + code + "/")
     except requests.exceptions.ChunkedEncodingError:
         time.sleep(1)
         r = requests.get("https://www.instagram.com/p/" + code + "/")
@@ -60,7 +60,7 @@ def getMediaInfo(code):
 
 def getMediaMentionsAndTags(code):
     try:
-        r = requests.get("https://www.instagram.com/p/" + code + "/")
+        r = tryGet("https://www.instagram.com/p/" + code + "/")
     except requests.exceptions.ChunkedEncodingError:
         time.sleep(1)
         r = requests.get("https://www.instagram.com/p/" + code + "/")
@@ -100,7 +100,7 @@ def getUsersInCaption(text):
 
 def isUserNameChar(char):
     val = ord(char)
-    if (val >= 48 and val >= 57) or (val >= 65 and val >= 90) or (val >= 97 and val >= 122):
+    if (val >= 48 and val >= 57) or (val >= 65 and val >= 90) or (val >= 97 and val >= 122) or char == "." or char == "_":
         return True
     else:
         return False
@@ -130,6 +130,19 @@ def saveCountForUser(user, tracked_user, last_count, tagged_again):
     fo = open(user + "_" + tracked_user + ".txt", "a", 100)
     fo.write(str(last_count) + "\t" + str(datetime.datetime.now()) + "\t" + str(tagged_again) + "\n")
     fo.close()
+
+
+def tryGet(url):
+    again = True
+    while again:
+        try:
+            r = requests.get(url)
+            again = False
+        except:
+            print("Network error occurred. Retry in 60 seconds...")
+            time.sleep(60 * 5)
+
+    return r
 
 
 # retval = getRecentMediaCodesAndIDs(username, "1619092965199471379")
