@@ -3,6 +3,7 @@ import json
 import time
 import datetime
 import os
+from os import system
 from subprocess import call
 
 username = "_nazan_nur"
@@ -157,6 +158,8 @@ def tryGet(url):
 
 username = input("Instagram account name to be tracked: ")
 check_int = int(input("Seconds between every control: "))
+
+system("title " + username)
 
 while True:
     if os.name == 'nt':
