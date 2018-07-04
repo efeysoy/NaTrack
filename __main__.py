@@ -162,7 +162,7 @@ def tryGet(url):
 username = input("Instagram account name to be tracked: ")
 check_int = int(input("Seconds between every control: "))
 
-system("title " + username)
+system("title " + username)git commit
 
 while True:
     if os.name == 'nt':
