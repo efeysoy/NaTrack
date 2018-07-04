@@ -3,6 +3,7 @@ import json
 import time
 import datetime
 import os
+import traceback
 from os import system
 from subprocess import call
 
@@ -21,6 +22,8 @@ def getFollowerCount(user):
     end = r.text.find(";</script>", start)
     json_text = r.text[start:end]
     data = json.loads(json_text)
+    if len(data["entry_data"]) == 0:
+        return -1
     return data["entry_data"]["ProfilePage"][0]["graphql"]["user"]["edge_followed_by"]["count"]
 
 
@@ -172,7 +175,15 @@ while True:
     tracked_users = load_users(username)
 
     # get recent media codes starting  from last_id
-    media_codes = getRecentMediaCodesAndIDs(username, last_id)
+    try:
+        media_codes = getRecentMediaCodesAndIDs(username, last_id)
+    except Exception as e:
+        f = open(username + "__error.log", 'a')
+        f.write(">>>>>>>>>>>>  getRecentMediaCodesAndIDs: \n\r")
+        traceback.print_exc(file=f)
+        f.close()
+        continue
+
     print("> " + str(len(media_codes)) + " new media found. Checking connected users...")
     # update last_id
     if len(media_codes) > 0:
@@ -180,7 +191,14 @@ while True:
 
     for media in media_codes:
         # get mentioned and tagged users for each media
-        users = getMediaMentionsAndTags(media[0])
+        try:
+            users = getMediaMentionsAndTags(media[0])
+        except Exception as e:
+            f = open(username + "__error.log", 'a')
+            f.write(">>>>>>>>>>>>  getRecentMediaCodesAndIDs: \n\r")
+            traceback.print_exc(file=f)
+            f.close()
+            continue
 
         # and for each user if the user isn't in track list then add to the list and update file
         user_added = False
@@ -196,7 +214,18 @@ while True:
     print("> Looking for follower counts for users:")
     for tracked_user in tracked_users:
         print(">>> " + tracked_user)
-        follower_count = getFollowerCount(tracked_user)
+        try:
+            follower_count = getFollowerCount(tracked_user)
+        except Exception as e:
+            f = open(username + "__error.log", 'a')
+            f.write(">>>>>>>>>>>>  getRecentMediaCodesAndIDs: \n\r")
+            traceback.print_exc(file=f)
+            f.close()
+            continue
+
+        if follower_count == -1:
+            tracked_users.remove(tracked_user)
+            save_users(username, tracked_users)
         saveCountForUser(username, tracked_user, follower_count, tracked_user in users)
 
     print("> Process completed. Sleeping for " + str(check_int) + " seconds...")
