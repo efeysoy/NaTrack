@@ -18,7 +18,7 @@ def getFollowerCount(user):
         time.sleep(1)
         r = requests.get("https://www.instagram.com/" + user + "/")
 
-    start = r.text.find("activity_counts") - 3
+    start = r.text.find("{\"config\":{\"csrf_token\"")
     end = r.text.find(";</script>", start)
     json_text = r.text[start:end]
     data = json.loads(json_text)
@@ -34,7 +34,7 @@ def getRecentMediaCodesAndIDs(user, lastMedia=''):
         time.sleep(1)
         r = requests.get("https://www.instagram.com/" + user + "/")
 
-    start = r.text.find("activity_counts") - 3
+    start = r.text.find("{\"config\":{\"csrf_token\"")
     end = r.text.find(";</script>", start)
     json_text = r.text[start:end]
     data = json.loads(json_text)
@@ -55,7 +55,7 @@ def getMediaInfo(code):
         time.sleep(1)
         r = requests.get("https://www.instagram.com/p/" + code + "/")
 
-    start = r.text.find("activity_counts") - 3
+    start = r.text.find("{\"config\":{\"csrf_token\"")
     end = r.text.find(";</script>", start)
     json_text = r.text[start:end]
     data = json.loads(json_text)
@@ -69,7 +69,7 @@ def getMediaMentionsAndTags(code):
         time.sleep(1)
         r = requests.get("https://www.instagram.com/p/" + code + "/")
 
-    start = r.text.find("activity_counts") - 3
+    start = r.text.find("{\"config\":{\"csrf_token\"")
     end = r.text.find(";</script>", start)
     json_text = r.text[start:end]
     data = json.loads(json_text)
